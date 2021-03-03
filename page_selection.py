@@ -239,18 +239,18 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.input_path is None:
+    if args.input_image is None:
         print("No image specified")
 
-    elif not os.path.exists(args.input_path):
+    elif not os.path.exists(args.input_image):
         print('The input image specified path does not exists')
 
     else:
         if args.output_path is None:
-           path,img_format=args.input_path.split(".")
+           path,img_format=args.input_image.split(".")
            outpath= path+"_scanned."+img_format
         else:
             outpath=args.output_path
 
-        scanner = Scanner(args.input_path, outpath)
+        scanner = Scanner(args.input_image, outpath)
         scanner.run()
