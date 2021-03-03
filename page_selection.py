@@ -9,13 +9,13 @@ import cv2
 class quadrilateral:
 
     """
-            c1    mp1   c2
+            c0    mp0   c1
                 *----*----*
                 -----------
-            mp4 *---------* mp2
+            mp3 *---------* mp1
                 -----------
                 *----*----*
-            c4    mp3   c3
+            c3    mp2   c2
 
     """
 
@@ -31,6 +31,7 @@ class quadrilateral:
         # get mp1,mp2,mp3 and mp4
         self.middlepoints=self.get_middlepoints()
         
+        # get slope of edges
         self.slope = np.array([((self.contours[(i+1)%4,1]-self.contours[i,1])/(self.contours[(i+1)%4,0]-self.contours[i,0]))
                             for i in range(len(self.contours))]).astype("float32")
 
@@ -82,7 +83,34 @@ class quadrilateral:
             s=self.slope
             (x,y)=coord
 
-            
+            '''
+                for parellel shift of edges
+
+                            (x1_new,y1_new)
+                                ^                                 slope :- 
+                    (x0,y0)  ___|_________(x1,y1)                   s0 = (y1-y0)/(x1-x0) 
+                            |   :        |                                 .
+                            |   :        |                                 .
+                            |   *(x,y)   * middle point 1               and so on 
+                            |   :        |
+                            |___ ________|
+                    (x3,y3)     |          (x2,y2)
+                                V
+                            (x2_new,y2_new)
+
+                when middle point 1 is shifted to (x,y)
+
+                (x1_new,y1_new) = (
+                                   (y1 - y + s1*x - s0*x1)/(s1 - s0),
+                                   (s1*y1 - s0*s1*x1 + s0*s1*x - s0*y)/(s1 - s0)
+                                  )
+
+                (x2_new,y2_new) = (
+                                   (y2 - y + s1*x - s2*x2)/(s1 - s2),
+                                   (s1*y2 - s2*s1*s2 + s2*s1*x - s2*y)/(s1 - s2)
+                                  )
+            '''
+
             self.contours[i] = (round((c[i,1] - y +s[i]*x -s[i-1]*c[i,0])/(s[i] - s[i-1])),
                                 round((s[i]*c[i,1] - s[i-1]*s[i]*c[i,0] + s[i-1]*s[i]*x - s[i-1]*y)/(s[i] - s[i-1]))
                                 )
@@ -131,11 +159,12 @@ class Scanner():
         cv2.drawContours(img, [self.quadrilateral.contours], -1,
                        self.quadrilateral.border_color, self.quadrilateral.r//3)
 
-        # Draw the corner of the trapezoid as circles
+        # Draw the corner of the quadrilateral as circles
         for x, y in self.quadrilateral.contours:
             cv2.circle(img, (x, y), self.quadrilateral.r,
                       self.quadrilateral.corner_color, cv2.FILLED)
 
+        # Draw the middlepoints of the quadrilateral as circles
         for x, y in self.quadrilateral.middlepoints:
             cv2.circle(img, (x, y), self.quadrilateral.r,
                       self.quadrilateral.corner_color, cv2.FILLED)
@@ -144,7 +173,7 @@ class Scanner():
 
 
     def drag_and_drop_border(self, event, x, y, flags, param):
-        # If the left click is pressed, get the point to drag
+        # If the left click is pressed, get the middlepoint or corner to drag
         if event == cv2.EVENT_LBUTTONDOWN:
             # Get the selected point if exists
             self.corner_dragged = self.quadrilateral.get_corner_index((x, y))
