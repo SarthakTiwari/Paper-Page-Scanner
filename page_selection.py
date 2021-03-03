@@ -2,6 +2,7 @@ import os
 import argparse 
 import numpy as np
 import cv2
+from pagecontour import pagecontour
 
 
 
@@ -229,5 +230,27 @@ class Scanner():
         cv2.destroyAllWindows()
 
 
-scanner = Scanner("img/1.jpg", "img/1_scanned.jpg")
-scanner.run()
+
+
+if __name__ == "__main__":
+    parser=argparse.ArgumentParser(description="Paper Page Detector and selector ")
+    parser.add_argument("-in","--input_image",type=str,help="Input image :- .../image_name.format")
+    parser.add_argument("-out","--output_path",type=str,help="Output image path:- .../desired_image_name.desired_format ",default=None)
+
+    args = parser.parse_args()
+
+    if args.input_path is None:
+        print("No image specified")
+
+    elif not os.path.exists(args.input_path):
+        print('The input image specified path does not exists')
+
+    else:
+        if args.output_path is None:
+           path,img_format=args.input_path.split(".")
+           outpath= path+"_scanned."+img_format
+        else:
+            outpath=args.output_path
+
+        scanner = Scanner(args.input_path, outpath)
+        scanner.run()
