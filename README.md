@@ -30,5 +30,5 @@ python page_selection.py -in input_image.format -out output_image.desired_format
 ```
 #### Demo
 
-![gif](./static/in-action.gif)
+![gif](./static/in_action.gif)
 
