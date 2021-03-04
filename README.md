@@ -20,6 +20,7 @@ set project root folder as current working directory
 
 Make sure you have above mentioned dependencies installed on machine.
 if not then create a new environment and activate it
+
 install dependencies
 ```
 pip install -r requirements.txt
