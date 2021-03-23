@@ -2,7 +2,7 @@
 
 Functionality:-
 
-* Automatic Page contour detection (for cases which have complete page in image bounds).
+* Automatic Page contour detection (for cases which have all four page edges in image bounds).
 * Bounding box with free moving corners and parallelly moving edges.
 * Perspective transformation to obtain top-view image.
 
